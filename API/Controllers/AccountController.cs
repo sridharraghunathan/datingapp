@@ -38,7 +38,7 @@ namespace API.Controllers
 
             return new UserDTO
             {
-                UserName = user.UserName,
+                Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
 
@@ -59,13 +59,13 @@ namespace API.Controllers
 
             //Check the user Password is correct 
 
-            for (int i = 0; i <computedHash.Length; i++)
+            for (int i = 0; i < computedHash.Length; i++)
             {
                 if (user.PasswordHash[i] != computedHash[i]) return Unauthorized("Invalid Username or Password");
             }
             return new UserDTO
             {
-                UserName = user.UserName,
+                Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
 

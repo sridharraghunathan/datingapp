@@ -13,15 +13,15 @@ namespace API.Controllers
     [Authorize]
     public class UsersController : BaseApiController
     {
-       
+
         private readonly IUserRepository _userRepository;
         public UsersController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-         
+
         }
 
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
         {
