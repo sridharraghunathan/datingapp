@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input  } from '@angular/core';
 import { Member } from 'src/app/models/member';
 
 @Component({
@@ -6,11 +6,7 @@ import { Member } from 'src/app/models/member';
   templateUrl: './member-card.component.html',
   styleUrls: ['./member-card.component.scss']
 })
-export class MemberCardComponent implements OnInit {
+export class MemberCardComponent  {
   @Input() member: Member;
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
 }
