@@ -24,7 +24,6 @@ export class MemberEditComponent implements OnInit {
   ) {
     if (this.editForm.dirty) {
       $event.returnValue = true;
-      console.log('Host Listener is Triggered');
     }
   }
 

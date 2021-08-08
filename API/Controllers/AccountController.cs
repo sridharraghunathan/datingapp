@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,7 +51,8 @@ namespace API.Controllers
         {
 
             //First check the user exists
-            var user = await _dataContext.Users.SingleOrDefaultAsync(u => u.UserName == loginDTO.Username);
+            var user = await _dataContext.Users
+            .Include(p => p.Photos).SingleOrDefaultAsync(u => u.UserName == loginDTO.Username);
             if (user == null) return BadRequest("Invalid User");
 
             //Get the Password Salt for the verfication
@@ -66,7 +68,8 @@ namespace API.Controllers
             return new UserDTO
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
 
         }

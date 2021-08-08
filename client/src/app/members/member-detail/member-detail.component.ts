@@ -39,7 +39,6 @@ export class MemberDetailComponent implements OnInit {
   }
 
   getImages(): NgxGalleryImage[] {
-    console.log(this.member);
     const imageUrls = [];
     for (const photo of this.member?.photos) {
       imageUrls.push({
@@ -48,7 +47,6 @@ export class MemberDetailComponent implements OnInit {
         big: photo?.url,
       });
     }
-    console.log(imageUrls);
     return imageUrls;
   }
 
