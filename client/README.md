@@ -25,3 +25,13 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+## command to start the application local Angular Application
+ng serve
+
+## Command to start the application server side
+dotnet watch run 
+
+## SQL server is used for the database backend in local 
+## Post man tool was used for API testing
