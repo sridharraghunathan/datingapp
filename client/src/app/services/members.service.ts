@@ -70,7 +70,6 @@ export class MembersService {
     // here based on the values of the Query Params we are creating an Key
     var response = this.memberCache.get(Object.values(userParams).join('-'));
     if (response) {
-      console.log(this.memberCache);
       return of(response);
     }
 
@@ -108,8 +107,6 @@ export class MembersService {
   }
 
   getMember(username: string) {
-    console.log(this.memberCache);
-
     //we can use the reduce function to unpack the array inside array
 
     const member = [...this.memberCache.values()]
