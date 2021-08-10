@@ -10,6 +10,7 @@ namespace API.Data
         }
         public DbSet<AppUser> Users { get; set; }
         public DbSet<UserLike> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -29,6 +30,17 @@ namespace API.Data
                 .WithMany(l => l.LikedByUsers)
                 .HasForeignKey(s => s.LikedUserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            //Since we have Message Id is unique we dont need specify the has key column
+            builder.Entity<Message>()
+            .HasOne(s => s.Sender)
+            .WithMany(m => m.Sender)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+            .HasOne(s => s.Recipient)
+            .WithMany(m => m.Recipient)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

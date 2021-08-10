@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { PaginatedResult } from '../models/pagination';
 import { User } from '../models/user';
 import { UserParams } from '../models/UserParams';
 import { AccountService } from './account.service';
+import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({
@@ -73,11 +74,14 @@ export class MembersService {
   }
 
   getLikes(predicate: string, pageNumber, pageSize) {
-    let params = this.getPaginationHeaders(pageNumber, pageSize);
+    let params = getPaginationHeaders(pageNumber, pageSize);
     params = params.append('predicate', predicate);
-    return this.getPaginatedResult<Partial<Member[]>>(this.baseUrl + 'likes', params);
+    return getPaginatedResult<Partial<Member[]>>(
+      this.baseUrl + 'likes',
+      params,
+      this.http
+    );
   }
-
 
   getMembers(userParams: UserParams) {
     // here based on the values of the Query Params we are creating an Key
@@ -86,7 +90,7 @@ export class MembersService {
       return of(response);
     }
 
-    let params = this.getPaginationHeaders(
+    let params = getPaginationHeaders(
       userParams.pageNumber,
       userParams.pageSize
     );
@@ -95,9 +99,10 @@ export class MembersService {
     params = params.append('maxAge', userParams.maxAge.toString());
     params = params.append('gender', userParams.gender);
     params = params.append('orderBy', userParams.orderBy);
-    return this.getPaginatedResult<Member[]>(
+    return getPaginatedResult<Member[]>(
       this.baseUrl + 'users',
-      params
+      params,
+      this.http
     ).pipe(
       map((response) => {
         this.memberCache.set(Object.values(userParams).join('-'), response);
@@ -146,7 +151,8 @@ export class MembersService {
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
   }
-
+  //#region  Not Required Since its been made as reusable code0
+  /*
   private getPaginatedResult<T>(url, params) {
     const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
     return this.http.get<T>(url, { observe: 'response', params }).pipe(
@@ -170,4 +176,6 @@ export class MembersService {
 
     return params;
   }
+  */
+  //#endregion
 }

@@ -35,3 +35,5 @@ dotnet watch run
 
 ## SQL server is used for the database backend in local 
 ## Post man tool was used for API testing
+## Running the below command for the Execution Policy
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
