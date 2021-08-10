@@ -23,6 +23,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (error) {
           switch (error.status) {
             case 400:
+              // For validation Errors Like Form data incorrect
               if (error.error.errors) {
                 const modalStateErrors = [];
                 for (const key in error.error.errors) {
@@ -31,8 +32,15 @@ export class ErrorInterceptor implements HttpInterceptor {
                   }
                 }
                 throw modalStateErrors.flat();
-              } else {
+              }
+              // For the Bad request which has no message given from API
+              else if (typeof (error.error) === 'object') {
+                console.log(error.error);
                 this.toastr.error(error.statusText, error.status);
+              }
+              // For the request which has message given by the API
+              else {
+                this.toastr.error(error.error, error.status);
               }
               break;
             case 401:

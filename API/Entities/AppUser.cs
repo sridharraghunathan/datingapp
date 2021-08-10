@@ -23,6 +23,9 @@ namespace API.Entities
         public string Country { get; set; }
         public ICollection<Photo> Photos { get; set; }
 
+        public ICollection<UserLike> LikedByUsers { get; set; }
+        public ICollection<UserLike> LikedUsers { get; set; }
+
         // Below is an Extension Method to calc the age and the Getxxx naming convention
         // // is very important when we need to use the auotmapper.
         // public int GetAge()

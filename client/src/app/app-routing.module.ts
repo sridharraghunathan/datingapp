@@ -26,7 +26,7 @@ const routes: Routes = [
         component: MemberEditComponent,
         canDeactivate: [PreventUnsavedChangesGuard],
       },
-      { path: 'lists', component: ListsComponent },
+      { path: 'likes', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
     ],
   },

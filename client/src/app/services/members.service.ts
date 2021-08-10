@@ -66,6 +66,19 @@ export class MembersService {
  */
   //#endregion
 
+  //Likes
+
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/' + username, {});
+  }
+
+  getLikes(predicate: string, pageNumber, pageSize) {
+    let params = this.getPaginationHeaders(pageNumber, pageSize);
+    params = params.append('predicate', predicate);
+    return this.getPaginatedResult<Partial<Member[]>>(this.baseUrl + 'likes', params);
+  }
+
+
   getMembers(userParams: UserParams) {
     // here based on the values of the Query Params we are creating an Key
     var response = this.memberCache.get(Object.values(userParams).join('-'));
