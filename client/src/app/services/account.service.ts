@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { isArray } from 'ngx-bootstrap/chronos';
 import { ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -33,10 +34,18 @@ export class AccountService {
   }
 
   setCurrentUser(user: User) {
+    user.roles = [];
+    const role = this.getRolesFromToken(user.token).role;
+    Array.isArray(role) ? (user.roles = role) : user.roles.push(role);
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
       this.currentUserSource.next(user);
     }
+  }
+
+  getRolesFromToken(token) {
+    const roles = JSON.parse(atob(token.split('.')[1]));
+    return roles;
   }
 
   logout() {

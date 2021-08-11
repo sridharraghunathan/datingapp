@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUser
+    public class AppUser : IdentityUser<int>
     {
+        /*
+        since we moved to Identity Module below columns will be inhertied from Identity
         public int Id { get; set; }
         public string UserName { get; set; }
-
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        */
 
         public DateTime DateOfBirth { get; set; }
         public string KnownAs { get; set; }
@@ -25,10 +28,9 @@ namespace API.Entities
 
         public ICollection<UserLike> LikedByUsers { get; set; }
         public ICollection<UserLike> LikedUsers { get; set; }
-
         public ICollection<Message> Sender { get; set; }
-
-         public ICollection<Message> Recipient { get; set; }
+        public ICollection<Message> Recipient { get; set; }
+        public ICollection<AppUserRole> UserRoles { get; set; }
 
         // Below is an Extension Method to calc the age and the Getxxx naming convention
         // // is very important when we need to use the auotmapper.
