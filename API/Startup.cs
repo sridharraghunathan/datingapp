@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Middleware;
+using API.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +26,7 @@ namespace API
             services.AddControllers();
             services.AddCors();
             services.AddIdentityServices(_config);
+            services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -51,15 +53,19 @@ namespace API
              policy
             .AllowAnyHeader()
             .AllowAnyMethod()
+            /// this allow credential used as it required for SIGNAL R
+             .AllowCredentials()
             .WithOrigins("https://localhost:4200"));
-            
+
             //This for Authorize Attribute to work
             app.UseAuthentication();
             app.UseAuthorization();
-
+            // We need to add the Signal R HUB end points 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+                endpoints.MapHub<MessageHub>("hubs/message");
             });
         }
     }

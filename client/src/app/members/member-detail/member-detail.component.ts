@@ -1,15 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   NgxGalleryOptions,
   NgxGalleryImage,
   NgxGalleryAnimation,
 } from '@kolkov/ngx-gallery';
 import { TabDirective, TabsetComponent } from 'ngx-bootstrap/tabs';
+import { take } from 'rxjs/operators';
 import { Member } from 'src/app/models/member';
 import { Message } from 'src/app/models/message';
-import { MembersService } from 'src/app/services/members.service';
+import { User } from 'src/app/models/user';
+import { AccountService } from 'src/app/services/account.service';
 import { MessageService } from 'src/app/services/message.service';
+import { PresenceService } from 'src/app/services/presence.service';
 
 @Component({
   selector: 'app-member-detail',
@@ -23,12 +26,14 @@ export class MemberDetailComponent implements OnInit {
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
   activeTab: TabDirective;
+  user: User;
 
-  constructor(
-    private memberService: MembersService,
-    private route: ActivatedRoute,
-    private messageService: MessageService
-  ) {}
+  constructor(public presence: PresenceService, private route: ActivatedRoute, 
+    private messageService: MessageService, private accountService: AccountService,
+    private router: Router) { 
+      this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    }
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => {
@@ -88,7 +93,13 @@ export class MemberDetailComponent implements OnInit {
   onTabActivated(data: TabDirective) {
     this.activeTab = data;
     if (this.activeTab.heading === 'Messages' && this.messages.length === 0) {
-      this.loadMessages();
+      this.messageService.createHubConnection(this.user, this.member.username);
+    } else {
+      this.messageService.stopHubConnection();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.messageService.stopHubConnection();
   }
 }

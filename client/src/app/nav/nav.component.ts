@@ -13,8 +13,7 @@ export class NavComponent implements OnInit {
 
   constructor(
     public accountService: AccountService,
-    private router: Router,
-    private toastrService: ToastrService
+    private router: Router 
   ) {}
 
   ngOnInit(): void {}
