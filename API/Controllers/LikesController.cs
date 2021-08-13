@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTO;
 using API.Entities;
@@ -13,12 +12,17 @@ namespace API.Controllers
     [Authorize]
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
-        public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+        //private readonly IUserRepository _unitOfWork.UserRepository;
+        //private readonly ILikesRepository _unitOfWork.LikesRepository;
+        public readonly IUnitOfWork _unitOfWork;  
+        public LikesController(IUnitOfWork unitOfWork
+            //IUserRepository userRepository, ILikesRepository likesRepository
+            )
         {
-            _likesRepository = likesRepository;
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
+
+            //  _unitOfWork.LikesRepository = likesRepository;
+            // _unitOfWork.UserRepository = userRepository;
         }
 
         [HttpPost("{username}")]
@@ -27,14 +31,14 @@ namespace API.Controllers
             // Getting the UserId By AuthorizationCode
             var sourceUserId = User.GetUserId();
             //Getting the Liked User Profile
-            var likedUser = await _userRepository.GetUserByUsernameAsync(username);
+            var likedUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
             if (likedUser == null) return NotFound();
             //Getting the Source User Profile to Update the Like
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
+            var sourceUser = await _unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
             //Checking whether given username he like not the same his name
             if (sourceUser.UserName == username) return BadRequest("You cannot like yourself");
             //Checking the Profile he liked has been Liked by before
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
+            var userLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
             if (userLike != null) return BadRequest("You already like this user");
             //Creating the instance to UserLike Table
             userLike = new UserLike
@@ -45,7 +49,7 @@ namespace API.Controllers
             //Adding the Information to the Like table
             sourceUser.LikedUsers.Add(userLike);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to like user");
         }
@@ -56,7 +60,7 @@ namespace API.Controllers
 
             // This is fetching the users who Liked other User with complete Object
             likesParams.UserId = User.GetUserId();
-            var users = await _likesRepository.GetUserLikes(likesParams);
+            var users = await _unitOfWork.LikesRepository.GetUserLikes(likesParams);
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize,
             users.TotalCount, users.TotalPages);

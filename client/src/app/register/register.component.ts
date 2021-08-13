@@ -46,7 +46,8 @@ export class RegisterComponent {
   }
 
   register() {
-
+    this.registerForm.controls['confirmPassword'].updateValueAndValidity();
+    this.validationErrors =[];
     this.accountService.register(this.registerForm.value).subscribe(response => {
       this.router.navigateByUrl('/members');
     }, error => {

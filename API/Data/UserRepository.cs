@@ -16,6 +16,7 @@ namespace API.Data
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+
         public UserRepository(DataContext context
          , IMapper mapper
         )
@@ -49,7 +50,7 @@ namespace API.Data
                 "created" => query.OrderByDescending(u => u.Created),
                 _ => query.OrderByDescending(u => u.LastActive)
             };
-            
+
             return await PagedList<MemberDTO>
             .CreateAsync(query.ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
             .AsNoTracking(), userParams.PageNumber, userParams.PageSize);
@@ -65,6 +66,12 @@ namespace API.Data
             return await _context.Users
                  .Include(p => p.Photos)
                 .SingleOrDefaultAsync(x => x.UserName == username);
+        }
+
+        public async Task<string> GetUserGenderAsync(string username)
+        {
+            return await _context.Users.Where(u => u.UserName == username)
+            .Select(g => g.Gender).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<AppUser>> GetUsersAsync()

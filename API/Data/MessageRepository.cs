@@ -16,6 +16,9 @@ namespace API.Data
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+
+ 
+
         public MessageRepository(DataContext context, IMapper mapper)
         {
             _mapper = mapper;
@@ -71,6 +74,7 @@ namespace API.Data
         {
             var query = _context.Messages
                 .OrderByDescending(m => m.MessageSent)
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
                 .AsQueryable();
 
             /*Basically container is nothing but 
@@ -82,17 +86,18 @@ namespace API.Data
 
             query = messageParams.Container switch
             {
-                "Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username
+                "Inbox" => query.Where(u => u.RecipientUsername == messageParams.Username
                     && u.RecipientDeleted == false),
-                "Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username
+                "Outbox" => query.Where(u => u.SenderUsername == messageParams.Username
                     && u.SenderDeleted == false),
-                _ => query.Where(u => u.Recipient.UserName ==
+                _ => query.Where(u => u.RecipientUsername ==
                     messageParams.Username && u.RecipientDeleted == false && u.DateRead == null)
             };
 
-            var messages = query.ProjectTo<MessageDTO>(_mapper.ConfigurationProvider);
 
-            return await PagedList<MessageDTO>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
+
+         //   var messages = query.ProjectTo<MessageDTO>(_mapper.ConfigurationProvider);
+            return await PagedList<MessageDTO>.CreateAsync(query, messageParams.PageNumber, messageParams.PageSize);
 
         }
 
@@ -120,7 +125,7 @@ namespace API.Data
                     message.DateRead = DateTime.UtcNow;
                 }
 
-                await _context.SaveChangesAsync();
+          //      await _context.SaveChangesAsync();
             }
 
             return _mapper.Map<IEnumerable<MessageDTO>>(messages);

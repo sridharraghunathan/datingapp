@@ -8,9 +8,16 @@
       />
       <div class="card-body">
 
-        <div class="mb-2" *ngIf="(presence.onlineUsers$ | async).includes(member.username)" >
+        <div class="mb-2" *ngIf="(presence.onlineUsers$ | async).includes(member.username);
+        else offline"  >
           <i class="fa fa-user-circle text-success"></i> Online now
       </div>
+
+      <ng-template #offline>
+        <i class="fa fa-user-circle text-grey mb-3"></i>  Offline
+     
+      </ng-template>
+
         <div>
           <strong>Location:</strong>
           <p>{{ member.city }}, {{ member.country }}</p>

@@ -1,8 +1,6 @@
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using API.Data;
 using API.DTO;
 using API.Entities;
 using API.Interfaces;
@@ -75,7 +73,7 @@ namespace API.Controllers
             var result = await _signInManager
                 .CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
-            if (!result.Succeeded) return Unauthorized();
+            if (!result.Succeeded) return Unauthorized("Invalid Username or Password");
             // Below code removed as Identity takes care of Password Management
             //Get the Password Salt for the verfication
             /*

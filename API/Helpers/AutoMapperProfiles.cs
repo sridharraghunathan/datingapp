@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using API.DTO;
 using API.Entities;
@@ -28,8 +27,8 @@ namespace API.Helpers
             .MapFrom(src => src.Recipient.Photos.FirstOrDefault(p => p.IsMain).Url
             ));
             // For Making the Time with letter Z at the end .
-            CreateMap<DateTime, DateTime>()
-            .ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
+            // CreateMap<DateTime, DateTime>()
+            // .ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
 
 
         }

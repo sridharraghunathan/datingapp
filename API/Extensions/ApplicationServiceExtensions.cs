@@ -17,9 +17,14 @@ namespace API.Extensions
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<LogUserActivity>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
+            /* Since we are converting code to Unit of work model no need to 
+                Inject all the repository 
+                
+            */
+            //services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<ILikesRepository, LikesRepository>();
+            //services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             string connectionStringData = config.GetConnectionString("DefaultConnection");
