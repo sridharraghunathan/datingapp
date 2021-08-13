@@ -20,7 +20,7 @@ export class LoadingInterceptor implements HttpInterceptor {
     this.busyService.busy();
 
     return next.handle(request).pipe(
-      delay(1000),
+     // delay(1000),
       //finalize is an method will tell request has been completed.
       finalize(() => {
         this.busyService.idle();

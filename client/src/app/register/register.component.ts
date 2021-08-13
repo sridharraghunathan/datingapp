@@ -1,5 +1,11 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  ValidatorFn,
+  AbstractControl,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../services/account.service';
@@ -15,13 +21,17 @@ export class RegisterComponent {
   maxDate: Date;
   validationErrors: string[] = [];
 
-  constructor(private accountService: AccountService, private toastr: ToastrService, 
-    private fb: FormBuilder, private router: Router) { }
+  constructor(
+    private accountService: AccountService,
+    private toastr: ToastrService,
+    private fb: FormBuilder,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.intitializeForm();
     this.maxDate = new Date();
-    this.maxDate.setFullYear(this.maxDate.getFullYear() -18);
+    this.maxDate.setFullYear(this.maxDate.getFullYear() - 18);
   }
 
   intitializeForm() {
@@ -32,27 +42,35 @@ export class RegisterComponent {
       dateOfBirth: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
-      password: ['', [Validators.required, 
-        Validators.minLength(4), Validators.maxLength(8)]],
-      confirmPassword: ['', [Validators.required, this.matchValues('password')]]
-    })
+      password: [
+        '',
+        [Validators.required, Validators.minLength(4), Validators.maxLength(8)],
+      ],
+      confirmPassword: [
+        '',
+        [Validators.required, this.matchValues('password')],
+      ],
+    });
   }
 
   matchValues(matchTo: string): ValidatorFn {
     return (control: AbstractControl) => {
-      return control?.value === control?.parent?.controls[matchTo].value 
-        ? null : {isMatching: true}
-    }
+      return control?.value === control?.parent?.controls[matchTo].value
+        ? null
+        : { isMatching: true };
+    };
   }
 
   register() {
     this.registerForm.controls['confirmPassword'].updateValueAndValidity();
-    this.validationErrors =[];
-    this.accountService.register(this.registerForm.value).subscribe(response => {
-      this.router.navigateByUrl('/members');
-    }, error => {
-      this.validationErrors = error;
-    })
+    this.validationErrors = [];
+    if (this.registerForm.valid) {
+      this.accountService.register(this.registerForm.value).subscribe(response => {
+        this.router.navigateByUrl('/members');
+      }, error => {
+        this.validationErrors = error;
+      })
+    }
   }
 
   cancel() {

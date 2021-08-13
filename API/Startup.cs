@@ -60,12 +60,20 @@ namespace API
             //This for Authorize Attribute to work
             app.UseAuthentication();
             app.UseAuthorization();
+            // To User the Index.html as starting file
+            app.UseDefaultFiles();
+            // To say wwwroot folder content servered as static file
+            app.UseStaticFiles();
+
+
             // We need to add the Signal R HUB end points 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<PresenceHub>("hubs/presence");
                 endpoints.MapHub<MessageHub>("hubs/message");
+                //Here we mention the fall back controller for the angular deployment
+                endpoints.MapFallbackToController("Index","Fallback");
             });
         }
     }

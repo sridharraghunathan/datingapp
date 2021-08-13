@@ -24,15 +24,21 @@ export class ErrorInterceptor implements HttpInterceptor {
           switch (error.status) {
             case 400:
               let modalStateErrors = [];
+
+              //For Login component Validation
+              if (request.url.includes('login')) {
+                modalStateErrors = this.errorValidation(error);
+                this.toastr.error(modalStateErrors.join(" "),"400")
+              }
+
               // For validation Errors Like Form data incorrect
-              if (error.error.errors) {
-                for (const key in error.error.errors) {
-                  if (error.error.errors[key]) {
-                    modalStateErrors.push(error.error.errors[key]);
-                  }
-                }
-                throw modalStateErrors.flat();
-              } else if (Array.isArray(error.error)) {
+              else if (error.error.errors) {
+                modalStateErrors = this.errorValidation(error);
+                throw modalStateErrors;
+              } 
+
+              // For Validation error for the Password check
+              else if (Array.isArray(error.error)) {
                 modalStateErrors = error.error.map(
                   (err: any) => err.description
                 );
@@ -40,7 +46,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               }
               // For the Bad request which has no message given from API
               else if (typeof error.error === 'object') {
-                this.toastr.error("Bad Request has been made", error.status);
+                this.toastr.error('Bad Request has been made', error.status);
               }
               // For the request which has message given by the API
               else {
@@ -48,8 +54,12 @@ export class ErrorInterceptor implements HttpInterceptor {
               }
               break;
             case 401:
-              this.toastr.error(error.error ? error.error : "Not Authorized to Perform this action."
-               , error.status);
+              this.toastr.error(
+                error.error
+                  ? error.error
+                  : 'Not Authorized to Perform this action.',
+                error.status
+              );
               break;
             case 404:
               this.router.navigateByUrl('/not-found');
@@ -62,7 +72,8 @@ export class ErrorInterceptor implements HttpInterceptor {
               break;
             case 0:
               this.toastr.error(
-                'Backend Server is Unavailable , Please Login After sometime', "503"
+                'Backend Server is Unavailable , Please Login After sometime',
+                '503'
               );
               break;
             default:
@@ -73,5 +84,15 @@ export class ErrorInterceptor implements HttpInterceptor {
         return throwError(error);
       })
     );
+  }
+
+  private errorValidation(error: any) {
+    let modalStateErrors = [];
+    for (const key in error.error.errors) {
+      if (error.error.errors[key]) {
+        modalStateErrors.push(error.error.errors[key]);
+      }
+    }
+    return modalStateErrors.flat();
   }
 }
