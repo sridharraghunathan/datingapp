@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { Group } from '../models/group';
 import { Message } from '../models/message';
 import { User } from '../models/user';
+import { BusyService } from './busy.service';
 import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
 @Injectable({
@@ -19,9 +20,11 @@ export class MessageService {
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private busyService: BusyService) {}
 
   createHubConnection(user: User, otherUsername: string) {
+    // when we start the connection we are showing loading
+    this.busyService.busy();
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'message?user=' + otherUsername, {
         accessTokenFactory: () => user.token,
@@ -29,18 +32,21 @@ export class MessageService {
       .withAutomaticReconnect()
       .build();
 
-    this.hubConnection.start().catch((error) => console.log(error));
-        // Initial Joining the Group this is triggered
+    this.hubConnection
+      .start()
+      .catch((error) => console.log(error))
+      .finally(() => this.busyService.idle()); // after establishing we are closing the loading icon
+    // Initial Joining the Group this is triggered
     this.hubConnection.on('ReceiveMessageThread', (messages) => {
       this.messageThreadSource.next(messages);
     });
-    //Subsequent message this is triggered 
+    //Subsequent message this is triggered
     this.hubConnection.on('NewMessage', (message) => {
       this.messageThread$.pipe(take(1)).subscribe((messages) => {
         this.messageThreadSource.next([...messages, message]);
       });
     });
-    //when they are not one the page and comes back then 
+    //when they are not one the page and comes back then
     //latest information will be updated unread to read
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
       if (group.connections.some((x) => x.username === otherUsername)) {
@@ -59,6 +65,7 @@ export class MessageService {
   stopHubConnection() {
     if (this.hubConnection) {
       this.hubConnection.stop();
+      this.messageThreadSource.next([]);
     }
   }
 
